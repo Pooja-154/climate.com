@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Story - USA Map and Intro</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Georgia', sans-serif;
+            background-color: #0a0a23;
+            color: white;
+        }
+
+        /* Intro Page */
+        .intro-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100vh;
+            padding: 50px;
+            background-color: #1b1b3a;
+            background: linear-gradient(135deg, #0d0d3f, #1b1b3a);
+        }
+        .intro-left {
+            flex: 1;
+        }
+        .intro-left h1 {
+            font-size: 3rem;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .intro-left p {
+            font-size: 1.2rem;
+            color: #dcdcdc;
+            margin-bottom: 30px;
+        }
+        .cta-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #e63946;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .intro-right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .intro-right img {
+            width: 100%;
+            border-radius: 10px;
+        }
+        .video-section {
+            padding: 100px 50px;
+            background-color: #151535;
+        }
+        .video-section h2 {
+            text-align: center;
+            margin-bottom: 50px;
+            color: #ffffff;
+        }
+        .video-container {
+            display: flex;
+            justify-content: center;
+        }
+        .video-container video {
+            width: 60%;
+            border-radius: 10px;
+        }
+
+        /* Map Page */
+        .map-page {
+            padding: 50px;
+            background-color: #0a0a23;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        .back-btn {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #ff6b6b;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        /* Lightbox Styles */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .lightbox-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .lightbox-content video {
+            width: 500px;
+            border-radius: 10px;
+        }
+        .close-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #e63946;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvgCpVw-OJMOREziQHBV1_WjF8qOByrgk"></script>
+</head>
+<body>
+
+    <!-- Intro Section -->
+    <div class="intro-section" id="home">
+        <div class="intro-left">
+            <h1>Your Climate Story: A Decade of Temperature Change Across the USA</h1>
+            <p>Explore how climate change has reshaped temperatures across the United States over the past decade. Discover data-driven stories from each region and share your own climate experiences.</p>
+        </div>
+        <div class="intro-right">
+            <img src="pexels-creationsbyfaik-1025469.jpg" alt="Climate Change Overview">
+        </div>
+    </div>
+
+    <!-- Video Section -->
+    <div id="video-section" class="video-section">
+        <h2>Drastic Temperature Changes in USA - Last Decade</h2>
+        <div class="video-container">
+            <video controls>
+                <source src="vspec.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <!-- Map Page -->
+    <div id="map-page" class="map-page">
+        <h2 style="text-align: center;">Explore the USA Temperature Changes</h2>
+        <div id="map"></div>
+        <a href="#home" class="back-btn">Go Back to Home</a>
+    </div>
+
+    <!-- Lightbox for Video -->
+    <div id="lightbox" class="lightbox">
+        <div class="lightbox-content">
+            <video id="lightbox-video" controls>
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <span class="close-btn" onclick="closeLightbox()">Close</span>
+        </div>
+    </div>
+
+    <script>
+        // Google Map Initialization
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 4,
+                center: {lat: 39.8283, lng: -98.5795}, // Center of USA
+                mapTypeId: 'terrain'
+            });
+
+            // Markers for each region with their respective videos
+            var regions = {
+                west: {lat: 37.7749, lng: -122.4194, video: "wes.mp4"},
+                south: {lat: 30.2672, lng: -97.7431, video: "sou.mp4"},
+                midwest: {lat: 41.8781, lng: -87.6298, video: "mid.mp4"},
+                northeast: {lat: 40.7128, lng: -74.0060, video: "nor.mp4"}
+            };
+
+            // Add markers
+            for (var region in regions) {
+                var marker = new google.maps.Marker({
+                    position: {lat: regions[region].lat, lng: regions[region].lng},
+                    map: map,
+                    title: region.charAt(0).toUpperCase() + region.slice(1)
+                });
+
+                // On marker click, open the lightbox with the specific video
+                marker.addListener('click', (function(regionVideo) {
+                    return function() {
+                        openLightbox(regionVideo);
+                    }
+                })(regions[region].video));
+            }
+        }
+
+        // Lightbox Functions
+        function openLightbox(videoSrc) {
+            var lightboxVideo = document.getElementById('lightbox-video');
+            lightboxVideo.src = videoSrc;
+            document.getElementById('lightbox').style.display = 'block';
+        }
+
+        function closeLightbox() {
+            var lightboxVideo = document.getElementById('lightbox-video');
+            lightboxVideo.pause();
+            lightboxVideo.src = "";
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>
